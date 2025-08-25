@@ -4,7 +4,7 @@ import FilterModal from './FilterModal';
 import QRCodeGenerator from './QRCodeGenerator';
 import NewEmployeeModal from './NewEmployeeModal';
 import ExportModal from './ExportModal';
-import { employeeService, Employee, EmployeeStats } from '../services/employeeService';
+import { employeeService, Employee, EmployeeStats, CreateEmployeeData } from '../services/employeeService';
 
 const Employees: React.FC = () => {
   const [employees, setEmployees] = useState<Employee[]>([]);
@@ -65,15 +65,45 @@ const Employees: React.FC = () => {
     setShowQRGenerator(true);
   };
 
-  const handleSaveEmployee = async (employeeData: any) => {
-    try {
-      await employeeService.createEmployee(employeeData);
-      setShowNewEmployee(false);
-      fetchEmployeesData(); // Rafraîchir la liste
-    } catch (error) {
-      console.error('Erreur lors de la création:', error);
+const handleSaveEmployee = async (employeeData: CreateEmployeeData, setFormErrors: (errors: any) => void) => {
+  try {
+    // Appel à l'API pour créer l'employé
+    await employeeService.createEmployee(employeeData);
+
+    // Si tout va bien, on réinitialise les erreurs et on ferme le modal
+    setFormErrors({});
+    setShowNewEmployee(false);
+    fetchEmployeesData(); // Rafraîchir la liste des employés
+  } catch (error: any) {
+    // Vérifier si l'erreur provient de l'API FastAPI
+    if (error.response && error.response.data && error.response.data.detail) {
+      const detail = error.response.data.detail;
+
+      // Préparer un objet d'erreurs pour les champs
+      const fieldErrors: { [key: string]: string } = {};
+
+      // Si c'est une erreur de type liste (FastAPI detail peut renvoyer [{"loc":..., "msg":..., "type":...}])
+      if (Array.isArray(detail)) {
+        detail.forEach((err: any) => {
+          if (err.loc && err.loc.length > 1) {
+            const field = err.loc[1]; // le nom du champ
+            fieldErrors[field] = err.msg;
+          }
+        });
+      } else if (typeof detail === 'string') {
+        // Si c'est une string simple
+        if (detail.includes('Email')) fieldErrors.email = detail;
+        if (detail.includes('Matricule')) fieldErrors.matricule = detail;
+      }
+
+      setFormErrors(fieldErrors);
+    } else {
+      console.error('Erreur inconnue lors de la création:', error);
     }
-  };
+  }
+};
+
+
 
   const handleDeleteEmployee = async (id: number) => {
     if (window.confirm('Êtes-vous sûr de vouloir supprimer cet employé ?')) {
@@ -398,6 +428,10 @@ export default Employees;
 
 
 
+
+function setFormErrors(arg0: {}) {
+  throw new Error('Function not implemented.');
+}
 // import React, { useState } from 'react';
 // import { Search, Filter, Plus, Download, QrCode, Edit, Trash2, Eye } from 'lucide-react';
 // import FilterModal from './FilterModal';

@@ -7,7 +7,7 @@ export interface Employee {
   first_name: string;
   last_name: string;
   email: string;
-  poste: string;
+  fonction: string;
   service: string;
   date_embauche: string;
   is_active: boolean;
@@ -33,7 +33,7 @@ export interface CreateEmployeeData {
   last_name: string;
   email: string;
   password: string;
-  poste: string;
+  fonction: string;
   service: string;
   date_embauche: string;
   matricule: string;
@@ -44,7 +44,7 @@ export interface UpdateEmployeeData {
   first_name?: string;
   last_name?: string;
   email?: string;
-  poste?: string;
+  fonction?: string;
   service?: string;
   date_embauche?: string;
   is_active?: boolean;
@@ -77,7 +77,7 @@ export const employeeService = {
 
   // Créer un nouvel employé
   createEmployee: async (employeeData: CreateEmployeeData): Promise<Employee> => {
-    return api.post('/employees', employeeData);
+    return api.post('/employees/create', employeeData);
   },
 
   // Mettre à jour un employé

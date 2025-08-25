@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { X, User, Mail, Phone, Calendar, Building, Briefcase } from "lucide-react";
-import { CreateEmployeeData, employeeService } from "../services/employeeService";
+import { UpdateEmployeeData, employeeService } from "../services/employeeService";
 
 interface NewEmployeeModalProps {
   onClose: () => void;
-  onSave: (employee: CreateEmployeeData) => void;
+  onSave: (employee: UpdateEmployeeData) => void;
   formErrors?: { [key: string]: string };
 }
 
@@ -256,10 +256,6 @@ export default NewEmployeeModal;
 
 
 
-
-function setShowNewEmployee(arg0: boolean) {
-  throw new Error("Function not implemented.");
-}
 // import React, { useState } from 'react';
 // import { X, User, Mail, Calendar, Building, Briefcase, Lock } from 'lucide-react';
 // import { CreateEmployeeData } from '../services/employeeService';
